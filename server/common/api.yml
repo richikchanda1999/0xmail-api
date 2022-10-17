@@ -53,19 +53,21 @@ paths:
         404:
           description: Example not found
           content: {}
-  /mappings/{type}:
-    get:
+  /check_mapping:
+    post:
       tags:
       - Mappings
-      parameters:
-      - name: type
-        in: path
+      description: This endpoint checks if a mapping exists already or not
+      requestBody:
+        description: The fields that should be entered while sending the request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckMappingBody'
         required: true
-        schema:
-          type: integer
       responses:
         200:
-          description: Returns if a mapping exists for the type
+          description: Returns if a mapping exists from `from` to `to`
           content: {}
         
 components:
@@ -79,3 +81,16 @@ components:
         name:
           type: string
           example: no_stress
+    CheckMappingBody:
+      title: CheckMapping
+      required:
+        - from
+        - to
+      type: object
+      properties:
+        from:
+          type: string
+          example: '137.0x79.0xF6C42302bC230BBA9c5379dDFb33ca72409E1624'
+        to:
+          type: string
+          example: 'richik@creatoros.co'

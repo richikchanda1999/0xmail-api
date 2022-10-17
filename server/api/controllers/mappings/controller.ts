@@ -3,12 +3,15 @@ import { Request, Response } from 'express';
 import L from '../../../common/logger';
 
 export class Controller {
-  byType(req: Request, res: Response): void {
+  checkMapping(req: Request, res: Response): void {
     L.info({ params: req.params }, 'Params');
-    const type = Number.parseInt(req.params['type']);
-    L.info({ type }, 'Type');
-    const data = MappingsService.byType(type);
-    res.json(data);
+    L.info({ body: req.body }, 'Body');
+    MappingsService.checkMapping(req.body['from'], req.body['to']).then(
+      (data) => {
+        L.info({ data }, 'Returned data');
+        res.json(data);
+      }
+    );
   }
 }
 export default new Controller();
