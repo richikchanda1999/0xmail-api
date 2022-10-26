@@ -3,6 +3,19 @@ import { Request, Response } from 'express';
 import L from '../../../common/logger';
 
 export class Controller {
+  createMapping(req: Request, res: Response): void {
+    L.info({ params: req.params }, 'Params');
+    L.info({ body: req.body }, 'Body');
+    MappingsService.createMapping(
+      req.body['chainId'],
+      req.body['transactionHash'],
+      req.body['message']
+    ).then((data) => {
+      L.info({ data }, 'Returned data');
+      res.json(data);
+    });
+  }
+
   checkMapping(req: Request, res: Response): void {
     L.info({ params: req.params }, 'Params');
     L.info({ body: req.body }, 'Body');
