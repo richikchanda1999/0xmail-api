@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
-import { initModels } from 'server/models/init-models';
-import L from 'server/common/logger';
+import { initModels } from '../models/init-models';
+import L from '../common/logger';
 
 function getModels() {
   if (
