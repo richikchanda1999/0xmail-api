@@ -9,6 +9,8 @@ export class Controller {
     MappingsService.createMapping(
       req.body['chainId'],
       req.body['transactionHash'],
+      req.body['email'],
+      req.body['sender'],
       req.body['message']
     ).then((data) => {
       L.info({ data }, 'Returned data');
