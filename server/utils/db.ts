@@ -18,6 +18,7 @@ function getModels() {
     {
       host: process.env.HOST,
       dialect: 'mysql',
+      protocol: 'tcp',
     }
   );
   const { address_endpoints, routes } = initModels(sequelize);
