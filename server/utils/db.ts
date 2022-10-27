@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { initModels } from '../models/init-models';
 import L from '../common/logger';
-import { CreateMappingResult } from './types';
+import { MappingResult } from './types';
 
 function getModels() {
   if (
@@ -24,9 +24,16 @@ function getModels() {
   return { address_endpoints, routes, sequelize };
 }
 
-async function doesMappingExist(from: string, to: string): Promise<boolean> {
+async function doesMappingExist(
+  from: string,
+  to: string
+): Promise<MappingResult> {
   const models = getModels();
-  if (!models) return false;
+  if (!models)
+    return {
+      error: 'Could not connect to database and initialise models',
+      value: false,
+    };
 
   const { address_endpoints, routes, sequelize } = models;
 
@@ -43,18 +50,18 @@ async function doesMappingExist(from: string, to: string): Promise<boolean> {
   L.info({ endpoint, route }, 'checkMapping');
 
   let ret = false;
-  if (!endpoint || !route) ret = false;
-  else if (endpoint.id === route.endpoint_id) ret = true;
+  let error;
+  if (!endpoint || !route) {
+    error = 'Failed to fetch data from database';
+    ret = false;
+  } else if (endpoint.id === route.endpoint_id) ret = true;
 
   await sequelize.close();
 
-  return ret;
+  return { error, value: ret };
 }
 
-async function createMapping(
-  from: string,
-  to: string
-): Promise<CreateMappingResult> {
+async function createMapping(from: string, to: string): Promise<MappingResult> {
   const models = getModels();
   if (!models)
     return {

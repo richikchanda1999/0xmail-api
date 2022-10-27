@@ -1,4 +1,4 @@
-export type CreateMappingResult = {
+export type MappingResult = {
   error?: string;
   value: boolean;
 };

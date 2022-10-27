@@ -1,6 +1,6 @@
 import isValid from '../../utils/decode';
 import { createMapping, doesMappingExist } from '../../utils/db';
-import { CreateMappingResult } from 'server/utils/types';
+import { MappingResult } from 'server/utils/types';
 
 export class MappingService {
   async createMapping(
@@ -9,7 +9,7 @@ export class MappingService {
     email: string,
     sender: string,
     message: string
-  ): Promise<CreateMappingResult> {
+  ): Promise<MappingResult> {
     const exists = await doesMappingExist(sender, email);
     if (exists) {
       return { error: 'Mapping already exists', value: false };
@@ -26,7 +26,7 @@ export class MappingService {
     return ret;
   }
 
-  async checkMapping(from: string, to: string): Promise<boolean> {
+  async checkMapping(from: string, to: string): Promise<MappingResult> {
     const ret = await doesMappingExist(from, to);
     return ret;
   }

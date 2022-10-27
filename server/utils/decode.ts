@@ -3,7 +3,7 @@ import sha256 from 'crypto-js/sha256';
 import ABI from '../../abis/Communication.json';
 import { hashMessage } from 'ethers/lib/utils';
 import chainInfo from '../chainInfo';
-import { CreateMappingResult } from './types';
+import { MappingResult } from './types';
 
 type Data = {
   chainId?: number;
@@ -60,7 +60,7 @@ async function isValid(
   email: string,
   txHash: string,
   message: string
-): Promise<CreateMappingResult> {
+): Promise<MappingResult> {
   if (!(chainIdFromAPI in chainInfo)) {
     return { error: 'Chain ID not supported', value: false };
   }
