@@ -1,5 +1,6 @@
 import isValid from '../../utils/decode';
 import { createMapping, doesMappingExist } from '../../utils/db';
+import { CreateMappingResult } from 'server/utils/types';
 
 export class MappingService {
   async createMapping(
@@ -8,9 +9,19 @@ export class MappingService {
     email: string,
     sender: string,
     message: string
-  ): Promise<boolean> {
-    const check = isValid(chainId, sender, email, transactionHash, message);
-    if (!check) return false;
+  ): Promise<CreateMappingResult> {
+    const exists = await doesMappingExist(sender, email);
+    if (exists) {
+      return { error: 'Mapping already exists', value: false };
+    }
+    const check = await isValid(
+      chainId,
+      sender,
+      email,
+      transactionHash,
+      message
+    );
+    if (!check.value) return check;
     const ret = await createMapping(sender, email);
     return ret;
   }

@@ -6,13 +6,15 @@ info:
 servers:
 - url: /api/v1
 tags:
-- name: CheckMappings
+- name: CheckMapping
   description: Endpoint to check for existing mappings
+- name: CreateMapping
+  description: Endpoint to create a new mapping
 paths:
-  /check_mapping:
+  /mapping/check:
     post:
       tags:
-      - Mappings
+      - CheckMapping
       description: This endpoint checks if a mapping exists already or not
       requestBody:
         description: The fields that should be entered while sending the request
@@ -24,6 +26,22 @@ paths:
       responses:
         200:
           description: Returns if a mapping exists from `from` to `to`
+          content: {}
+  /mapping/create:
+    post:
+      tags:
+      - Mappings
+      description: This endpoint creates a new mapping, if it does not exist
+      requestBody:
+        description: The fields that should be entered while sending the request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMappingBody'
+        required: true
+      responses:
+        200:
+          description: Returns if a mapping is established from `from` to `to`
           content: {}
         
 components:
@@ -37,7 +55,33 @@ components:
       properties:
         from:
           type: string
-          example: '137.0x79.0xF6C42302bC230BBA9c5379dDFb33ca72409E1624'
+          example: '0xF6C42302bC230BBA9c5379dDFb33ca72409E1624'
         to:
           type: string
-          example: 'richik@creatoros.co'
+          example: 'abc@email.com'
+    CreateMappingBody:
+      title: CreateMapping
+      required:
+        - chainId
+        - transactionHash
+        - email
+        - sender
+        - message
+      type: object
+      properties:
+        chainId:
+          type: number
+          example: 137
+        transactionHash:
+          type: string
+          example: '0x49ac751c972adc98cb2f75c3c6a9daafb8c66ad5b41508b6f89323ebceccd58d'
+        email:
+          type: string
+          example: 'abc@email.com'
+        sender:
+          type: string
+          example: '0xF6C42302bC230BBA9c5379dDFb33ca72409E1624'
+        message:
+          type: string
+          example: '0xb1c191cd5b0a76e314bac0c1ad859efb68fe5189dd744ed720a4f9dbc884385e58f759d8343fcf043f8ab9e5ea13beb1638f218df7193d1edb5abc1e5b0f37081c'
+        

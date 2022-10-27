@@ -14,7 +14,11 @@ export class Controller {
       req.body['message']
     ).then((data) => {
       L.info({ data }, 'Returned data');
-      res.json(data);
+      if (data.error) {
+        res.status(400).json(data);
+      } else {
+        res.status(200).json(data);
+      }
     });
   }
 

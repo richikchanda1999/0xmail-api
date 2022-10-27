@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { initModels } from '../models/init-models';
 import L from '../common/logger';
+import { CreateMappingResult } from './types';
 
 function getModels() {
   if (
@@ -50,15 +51,18 @@ async function doesMappingExist(from: string, to: string): Promise<boolean> {
   return ret;
 }
 
-async function createMapping(from: string, to: string): Promise<boolean> {
+async function createMapping(
+  from: string,
+  to: string
+): Promise<CreateMappingResult> {
   const models = getModels();
-  if (!models) return false;
+  if (!models)
+    return {
+      error: 'Could not connect to database and initialise models',
+      value: false,
+    };
 
   const { address_endpoints, routes, sequelize } = models;
-
-  const exists = await doesMappingExist(from, to);
-
-  if (exists) return false;
 
   const t = await sequelize.transaction();
 
@@ -67,11 +71,14 @@ async function createMapping(from: string, to: string): Promise<boolean> {
     await routes.create({ name: from }, { transaction: t });
 
     await t.commit();
+    return { value: true };
   } catch (e) {
     await t.rollback();
+    return {
+      error: `Could not create mapping. Rolling back changes: ${e}`,
+      value: false,
+    };
   }
-
-  return true;
 }
 
 export { doesMappingExist, createMapping };

@@ -3,6 +3,7 @@ import sha256 from 'crypto-js/sha256';
 import ABI from '../../abis/Communication.json';
 import { hashMessage } from 'ethers/lib/utils';
 import chainInfo from '../chainInfo';
+import { CreateMappingResult } from './types';
 
 type Data = {
   chainId?: number;
@@ -59,37 +60,35 @@ async function isValid(
   email: string,
   txHash: string,
   message: string
-) {
+): Promise<CreateMappingResult> {
   if (!(chainIdFromAPI in chainInfo)) {
-    return false;
+    return { error: 'Chain ID not supported', value: false };
   }
 
   const ret = await decodeTransaction(chainIdFromAPI, txHash);
   if (ret.error) {
-    console.error(`Could not decode transaction: ${ret.error}`);
-    return false;
+    return {
+      error: `Could not decode transaction: ${ret.error}`,
+      value: false,
+    };
   }
   console.log(ret);
 
   const { chainId, emailHash, sender, walletAddress, timestamp } = ret;
   if (!emailHash || !chainId || !sender || !walletAddress || !timestamp) {
-    console.error('Could not decode transaction');
-    return false;
+    return { error: 'Could not decode transaction', value: false };
   }
 
   if (chainId !== chainIdFromAPI) {
-    console.error('Chain ID mismatch');
-    return false;
+    return { error: 'Chain ID mismatch', value: false };
   } else if (sender !== senderFromAPI) {
-    console.error('Sender mismatch');
-    return false;
+    return { error: 'Sender mismatch', value: false };
   }
 
   const digest = sha256(email).toString();
 
   if (digest !== emailHash) {
-    console.error('Emails do not match');
-    return false;
+    return { error: 'Emails do not match', value: false };
   }
 
   const from = ethers.utils.recoverAddress(
@@ -98,11 +97,10 @@ async function isValid(
   );
 
   if (from !== walletAddress) {
-    console.error('Message not signed by the correct wallet');
-    return false;
+    return { error: 'Message not signed by the correct wallet', value: false };
   }
 
-  return true;
+  return { value: true };
 }
 
 export default isValid;
