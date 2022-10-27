@@ -1,6 +1,6 @@
 import isValid from '../../utils/decode';
 import { createMapping, doesMappingExist } from '../../utils/db';
-import { MappingResult } from 'server/utils/types';
+import { MappingResult } from '../../utils/types';
 
 export class MappingService {
   async createMapping(
